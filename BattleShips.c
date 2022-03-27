@@ -1,17 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <conio.h>
 
 #define BZ_HEIGHT 10
 #define BZ_WIDTH 20
 
 const char *field[] ={
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
     "  A B C D E F G H I J       A B C D E F G H I J  ",
     " /--------------------\\    /--------------------\\",
     "0|                    |   0|                    |",
@@ -24,20 +18,11 @@ const char *field[] ={
     "7|                    |   7|                    |",
     "8|                    |   8|                    |",
     "9|                    |   9|                    |",
-    " \\--------------------/    \\--------------------/",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 ",
-    "                                                 "
+    " \\--------------------/    \\--------------------/"
 
 };
 
-char *players_field[] = {
+char players_field[BZ_HEIGHT][BZ_WIDTH] = {
     "                    ",
     "                    ",
     "                    ",
@@ -50,7 +35,7 @@ char *players_field[] = {
     "                    "
 };
 
-char *enemy_field[] = {
+char enemy_field[BZ_HEIGHT][BZ_WIDTH] = {
     "                    ",
     "                    ",
     "                    ",
@@ -63,7 +48,7 @@ char *enemy_field[] = {
     "                    "
 };
 
-char *enemy_ships[] = {
+char enemy_ships[BZ_HEIGHT][BZ_WIDTH] = {
     "                    ",
     "                    ",
     "                    ",
@@ -102,13 +87,20 @@ char draw_fields[EFIELD_INFO_END] = {
 //------------ships-end------------------------------------------------------------
 
 void print_field();
-void shoot(char *, char **);
+void shoot(char *, char[BZ_HEIGHT][BZ_WIDTH]);
 
 int main()
 {   
     print_field();
-    // shoot("A1", players_field);
-    // print_field();
+    shoot("A1", players_field);
+    getch();
+    print_field();
+    shoot("J6", players_field);
+    getch();
+    print_field();
+    shoot("D8", enemy_field);
+    getch();
+    print_field();
     return 0;
 }
 
@@ -125,35 +117,43 @@ short* get_coords(char *position)
     return coords;
 }
 
-void shoot(char *position, char **tabel)
+void shoot(char *position, char tabel[BZ_HEIGHT][BZ_WIDTH])
 {
-    int *coords = get_coords(position);
-    char *symbol_in_tabel = *(tabel + coords[0]) + coords[1];
-//     if(*symbol_in_tabel == draw_fields[SHIP]) {*symbol_in_tabel = draw_fields[STRIKE];}
-//     else {*symbol_in_tabel = draw_fields[SHOT];}
+    short *coords = get_coords(position);
+    if(tabel[coords[1]][coords[0] * 2] == draw_fields[SHIP])
+    {
+        tabel[coords[1]][coords[0] * 2] = draw_fields[STRIKE];
+        tabel[coords[1]][coords[0] * 2 + 1] = draw_fields[STRIKE];
+    }
+    else 
+    {
+        tabel[coords[1]][coords[0] * 2] = draw_fields[SHOT];
+        tabel[coords[1]][coords[0] * 2 + 1] = draw_fields[SHOT];
+    }
 }
 
 void print_field()
-{
-    for(int i = 0; i < 9; i++) printf("%s\n", field[i]);
+{   
+    system("cls");
+    printf("%s\n%s\n", field[0], field[1]);
     for(int i = 0; i < BZ_HEIGHT; ++i)
     {
-        for(int j = 0; j < 2; j++) printf("%c", field[i + 9][j]);
+        for(int j = 0; j < 2; j++) printf("%c", field[i + 2][j]);
 
         //----------------1 person's ships---------------------
         for(int j = 0; j < BZ_WIDTH; j++) printf("%c", players_field[i][j]);
         //-----------------------------------------------------
 
-        for(int j = BZ_WIDTH + 2; j < BZ_WIDTH + 8; j++) printf("%c", field[i + 9][j]);
+        for(int j = BZ_WIDTH + 2; j < BZ_WIDTH + 8; j++) printf("%c", field[i + 2][j]);
 
         //----------------2 person's ships---------------------
         for(int j = 0; j < BZ_WIDTH; j++) printf("%c", enemy_field[i][j]);
         //-----------------------------------------------------
 
-        printf("%c", field[i + 9][2 * BZ_WIDTH + 8]);
+        printf("%c", field[i + 2][2 * BZ_WIDTH + 8]);
         printf("\n");
     }
-    for(int i = 0; i < 10; i++) printf("%s\n", field[i + 19]);
+    printf("%s\n", field[12]);
 }
 
 // const char *field[] ={
@@ -172,25 +172,10 @@ void print_field()
 //     " *----------*    *----------*"
 // };
 
-// void print_field()
+// void shoot(char *position, char **tabel)
 // {
-//     printf("%s\n%s\n", field[0], field[1]);
-//     for(int i = 0; i < BZ_HEIGHT; ++i)
-//     {
-//         for(int j = 0; j < 2; j++) printf("%c", field[i + 2][j]);
-
-//         //----------------1 person's ships---------------------
-//         for(int j = 0; j < BZ_WIDTH; j++) printf("%c", players_field[i][j]);
-//         //-----------------------------------------------------
-
-//         for(int j = BZ_WIDTH + 2; j < BZ_WIDTH + 8; j++) printf("%c", field[i + 2][j]);
-
-//         //----------------2 person's ships---------------------
-//         for(int j = 0; j < BZ_WIDTH; j++) printf("%c", enemy_field[i][j]);
-//         //-----------------------------------------------------
-
-//         printf("%c", field[i + 2][2 * BZ_WIDTH + 8]);
-//         printf("\n");
-//     }
-//     printf("%s\n", field[12]);
+//     short *coords = get_coords(position);
+//     // char *tabel[coords[0]][coords[1]] = *(tabel + coords[0]) + coords[1];
+//     if(tabel[coords[0]][coords[1]] == draw_fields[SHIP]) {tabel[coords[0]][coords[1]] = draw_fields[STRIKE];}
+//     else {tabel[coords[0]][coords[1]] = draw_fields[SHOT];}
 // }
